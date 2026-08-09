@@ -218,6 +218,12 @@ class Ioctl_ID(Enum):
     T3_MAX = 0x24
     ISO15765_WFT_MAX = 0x25
 
+    # Tatrix specific
+    TX_IOCTL_APP_SERVICE             = 0x70000
+    TX_IOCTL_SET_DLL_DEBUG_FLAGS     = 0x70001
+    TX_IOCTL_SET_DEV_DEBUG_FLAGS     = 0x70002
+    TX_IOCTL_SET_DLL_STATUS_CALLBACK = 0x70003
+
     # J2534-2
     CAN_MIXED_FORMAT          = 0x8000
     J1962_PINS                = 0x8001
@@ -234,10 +240,11 @@ class Ioctl_ID(Enum):
     INPUT_RANGE_HIGH          = 0x8027 # Upper limit in millivolts of A/D input. Read Only.
 
 
+# Tatrix specific
 class Ioctl_Flags(Enum):
-    TX_IOCTL_BASE = 0x70000
-    TX_IOCTL_SET_DLL_DEBUG_FLAGS = 0x70001
-    TX_IOCTL_DLL_DEBUG_FLAG_J2534_CALLS = 0x00000001
+    TX_IOCTL_DLL_DEBUG_FLAG_J2534_CALLS   = 0x00000001
+    TX_IOCTL_DLL_DEBUG_FLAG_ALL_DEV_COMMS = 0x00000002
+    TX_IOCTL_DEV_DEBUG_FLAG_USB_COMMS     = 0x00000001
 
 
 class PASSTHRU_MSG(Structure):
