@@ -860,12 +860,8 @@ class J2534Connection(BaseConnection):
     def read_vbatt(self, digits=1) -> float:
         self.check_connection_opened()
 
-        vbatt = ctypes.POINTER(ctypes.c_int32)()
-
-        self.result = self.interface.PassThruIoctl(self.channelID, Ioctl_ID.READ_VBATT, None, vbatt)
+        self.result, value = self.interface.PassThruIoctl_READ_VBATT(self.devID)
         self.log_last_operation("PassThruIoctl READ_VBATT")
-
-        value = ctypes.cast(vbatt, ctypes.c_void_p).value
 
         return round(value / 1000, digits) if value else 0
 

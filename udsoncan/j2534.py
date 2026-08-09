@@ -1,5 +1,5 @@
 from enum import Enum
-from ctypes import Structure, WINFUNCTYPE, POINTER, cast, cdll, c_char, c_long, c_void_p, c_ubyte, c_ulong, byref  # type: ignore
+from ctypes import Structure, WINFUNCTYPE, POINTER, cdll, c_char, c_long, c_void_p, c_ubyte, c_ulong, byref  # type: ignore
 
 
 class Error_ID(Enum):
@@ -384,7 +384,7 @@ class J2534():
             c_void_p,
             c_void_p,
         )
-        dllPassThruIoctlParams = (1, "Handle", 0), (1, "IoctlID", 0), (1, "pInput", 0), (1, "pOutput", 0)
+        dllPassThruIoctlParams = (1, "HandleID", 0), (1, "IoctlID", 0), (1, "pInput", 0), (1, "pOutput", 0)
         self.dllPassThruIoctl = dllPassThruIoctlProto(("PassThruIoctl", self.hDLL), dllPassThruIoctlParams)
 
     def PassThruOpen(self):
@@ -465,12 +465,18 @@ class J2534():
         result = self.dllPassThruGetLastError(pErrorDescription)
         return Error_ID(result), pErrorDescription.value.decode()
 
-    def PassThruIoctl(self, Handle, IoctlID, ioctlInput=None, ioctlOutput=None):
+    def PassThruIoctl(self, HandleID, IoctlID: Ioctl_ID, ioctlInput=None, ioctlOutput=None):
         pInput = None if ioctlInput is None else byref(ioctlInput)
         pOutput = None if ioctlOutput is None else byref(ioctlOutput)
 
-        result = self.dllPassThruIoctl(Handle, c_ulong(IoctlID.value), pInput, pOutput)
+        result = self.dllPassThruIoctl(HandleID, c_ulong(IoctlID.value), pInput, pOutput)
         return Error_ID(result)
+
+    def PassThruIoctl_READ_VBATT(self, DeviceID):
+        vbatt = c_ulong()
+
+        result = self.PassThruIoctl(DeviceID, Ioctl_ID.READ_VBATT, None, vbatt)
+        return result, vbatt.value
 
     def PassThruStartMsgFilter(self, ChannelID, txid: int, rxid: int, extid = None):
         self.txid = txid.to_bytes(4, "big")
